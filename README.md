@@ -1,6 +1,8 @@
 # HousingZiplines
 An extremely dynamic and configurable zipline function for Hypixel Housing.
 
+Requires [HTSL](https://github.com/BusterBrown1218/HTSL)
+
 ### Setup:
 > - var zip/x = destination x
 > - var zip/y = destination y
