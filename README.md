@@ -27,7 +27,6 @@ Requires [HTSL](https://github.com/BusterBrown1218/HTSL)
 > - (higher values may cause issues)
 
 ℹ️ default: 10, factors of 5
-⚠️ zipline-dev only
 
 > var zip/decay = decay factor (default: 10) [-inf to inf]
 > - -x : works intuitively (reverses decay)
@@ -36,4 +35,3 @@ Requires [HTSL](https://github.com/BusterBrown1218/HTSL)
 > - 100 : heavy decay
 
 ℹ️﻿ default: 10, all numbers
-⚠️ zipline-dev only
