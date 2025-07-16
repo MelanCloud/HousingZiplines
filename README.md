@@ -10,7 +10,7 @@ Requires [HTSL](https://github.com/BusterBrown1218/HTSL)
 > - var zip/active = 1
 
 ### Optional Setup:
-> var zip/slack = slack factor (default: 5)
+> var zip/slack = slack factor
 > - -x : Works intuitively (goes upwards)
 > - 0 : no slack
 > - 1 : extremely light slack
@@ -18,6 +18,7 @@ Requires [HTSL](https://github.com/BusterBrown1218/HTSL)
 > - 10 : heavy slack
 
 ℹ️﻿ default: 5, factors of 5
+⚠️ values >50 may *rarely* cause issues
 
 > var zip/mag = magnitude factor
 > - -x : works intuitively (inverse slope acceleration) 
@@ -27,10 +28,15 @@ Requires [HTSL](https://github.com/BusterBrown1218/HTSL)
 
 ℹ️ default: 10, factors of 5
 
-> var zip/decay = decay factor (default: 10) [-inf to inf]
+> var zip/decay = decay factor
 > - -x : works intuitively (reverses decay)
 > - 0 : no decay
 > - 10 : normal decay
 > - 100 : heavy decay
 
-ℹ️﻿ default: 10, all numbers
+ℹ️﻿ default: 10, all integers
+
+> var zip/speed = set initial speed
+> - -x : does not support negative values
+
+ℹ️﻿ default: 1000, all positive integers
