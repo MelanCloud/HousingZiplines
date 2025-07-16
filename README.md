@@ -18,15 +18,16 @@ Requires [HTSL](https://github.com/BusterBrown1218/HTSL)
 > - 10 : heavy slack
 
 ℹ️﻿ default: 5, factors of 5
+⚠️ higher values may *rarely* cause issues
 
 > var zip/mag = magnitude factor
 > - -x : works intuitively (inverse slope acceleration) 
 > - 0 : base acceleration
 > - 10 : x10 slope acceleration
 > - 100 : x100 slope acceleration
-> - (higher values may cause issues)
 
 ℹ️ default: 10, factors of 5
+⚠️ higher values may *rarely* cause issues
 
 > var zip/decay = decay factor (default: 10) [-inf to inf]
 > - -x : works intuitively (reverses decay)
