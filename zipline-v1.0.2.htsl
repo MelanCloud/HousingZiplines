@@ -11,20 +11,20 @@ Setup:
 Optional Setup:
     var zip/slack = slack factor (default: 5) [factors of 5]
         -x  : works intuitively (goes upwards)
-        0   : no slack
+        1   : no slack
         5   : normal slack
         10  : heavy slack
         ( values >50 may *rarely* cause issues )
     var zip/mag = magnitude factor (default: 10) [factors of 5]
         -x  : works intuitively (inverse slope acceleration)
-        0   : base acceleration
+        1   : base acceleration
         10  : x10 slope acceleration
         100 : x100 slope acceleration
     var zip/decay = decay factor (default: 10) [-inf to inf]
         -x  : works intuitively (reverses decay)
-        0   : no decay
+        1   : no decay
         10  : normal decay
-        100 : heavy decay
+        100 : extremely light decay
     var zip/speed = set initial speed (default: 1000) [0+]
         -x  : does not support negative values
 */
@@ -32,7 +32,17 @@ Optional Setup:
 // recur 5t
 // goto function "Zipline"
 
-if (var zip/active == 0 0, var zip/phase == 0 0) {
+if (var zip/active == 0 0, var zip/dist = 0 0) {
+// footprint cleanup
+    var zip/x0 Unset
+    var zip/y0 Unset
+    var zip/z0 Unset
+    var zip/dx Unset
+    var zip/dy Unset
+    var zip/dz Unset
+}
+
+if (var zip/active == 0 0, var zip/dist = 0 0) {
 // footprint cleanup
     var zip/spd Unset
     var zip/slack Unset
@@ -47,90 +57,67 @@ if (var zip/active == 0 0, var zip/phase == 0 0) {
     exit
 }
 
-if (var zip/phase >= 1 0, var zip/dist <= var zip/phase 0) {
-    var zip/x = var zip/dest/x 0
-    var zip/y = var zip/dest/y 0
-    var zip/z = var zip/dest/z 0
-    var zip/phase = -1
-    var zip/dist/s = 0
-}
-
-if (var zip/active == 1) {
-    var zip/dest/x = var zip/x 0
-    var zip/dest/y = var zip/y 0
-    var zip/dest/z = var zip/z 0
-    var zip/x += %player.location.x%
-    var zip/x /= 2
-    var zip/y += %player.location.y%
-    var zip/y /= 2
-    var zip/z += %player.location.z%
-    var zip/z /= 2
-    var zip/spd = var zip/speed 1000
-}
-
 if () {
 // velocities & distance
-    globalvar zip/dx = var zip/x 0
-    globalvar zip/dx -= %player.location.x%
-    var xVelo = globalvar zip/dx 0
-    var zip/dy = var zip/y 0
-    var zip/dy -= %player.location.y%
-    var yVelo = var zip/dy 0
-    var zip/slope = var zip/dy 0
-    var zip/dz = var zip/z 0
-    var zip/dz -= %player.location.z%
-    var zVelo = var zip/dz 0
-    var zip/dz *= var zip/dz 0
-    globalvar zip/dx *= globalvar zip/dx 0
-    var zip/dy *= var zip/dy 0
-    globalvar zip/dx += var zip/dz 0
-    globalvar zip/dx += var zip/dy 0
+    globalvar zip/px = var zip/x 0
+    globalvar zip/px -= %player.location.x%
+    var xVelo = globalvar zip/px 0
+    var zip/py = var zip/y 0
+    var zip/py -= %player.location.y%
+    var yVelo = var zip/py 0
+    var zip/slope = var zip/py 0
+    var zip/pz = var zip/z 0
+    var zip/pz -= %player.location.z%
+    var zVelo = var zip/pz 0
+    var zip/pz *= var zip/pz 0
+    globalvar zip/px *= globalvar zip/px 0
+    var zip/py *= var zip/py 0
+    globalvar zip/px += var zip/pz 0
+    globalvar zip/px += var zip/py 0
 
 // SQRT
     teamvar multi temp = 3037000498
-    teamvar multi temp /= globalvar zip/dx 0
+    teamvar multi temp /= globalvar zip/px 0
     teamvar multi temp += 1
 
-    globalvar zip/dx *= %var.team/multi temp 0%
-    globalvar zip/dx *= %var.team/multi temp 0%
+    globalvar zip/px *= %var.team/multi temp 0%
+    globalvar zip/px *= %var.team/multi temp 0%
 
-    teamvar temp0 temp = globalvar zip/dx 0
+    teamvar temp0 temp = globalvar zip/px 0
     teamvar temp0 temp /= 537752656
     teamvar temp0 temp += 880298
 
-    globalvar temp = globalvar zip/dx 0
+    globalvar temp = globalvar zip/px 0
     globalvar temp /= %var.team/temp0 temp 0%
 }
 if () {
     globalvar temp += %var.team/temp0 temp 0%
 
-    teamvar temp0 temp = globalvar zip/dx 0
+    teamvar temp0 temp = globalvar zip/px 0
     teamvar temp0 temp /= globalvar temp 0
     globalvar temp /= 4
     globalvar temp += %var.team/temp0 temp 0%
 
-    globalvar temp2 = globalvar zip/dx 0
+    globalvar temp2 = globalvar zip/px 0
     globalvar temp2 /= globalvar temp 0
     globalvar temp2 += globalvar temp 0
 
-    teamvar temp0 temp = globalvar zip/dx 0
+    teamvar temp0 temp = globalvar zip/px 0
     teamvar temp0 temp /= globalvar temp2 0
     globalvar temp2 /= 4
     globalvar temp2 += %var.team/temp0 temp 0%
 
-    var zip/dist = globalvar zip/dx 0
+    var zip/dist = globalvar zip/px 0
     var zip/dist /= globalvar temp2 0
     var zip/dist += globalvar temp2 0
 
-    globalvar zip/dx /= var zip/dist 0
+    globalvar zip/px /= var zip/dist 0
     var zip/dist /= 4
-    var zip/dist += globalvar zip/dx 0
+    var zip/dist += globalvar zip/px 0
 
     var zip/dist += 1
     var zip/dist /= %var.team/multi temp 0%
 // SQRT END
-
-    var zip/dist *= 2
 
 // failsafes
     teamvar temp0 temp = var zip/dist 0
@@ -150,38 +137,78 @@ if () {
     var zip/slope *= -1
 }
 
+// vector projection
+if (var zip/active == 1 0) {
+    var zip/x0 = %player.location.x%
+    var zip/y0 = %player.location.y%
+    var zip/z0 = %player.location.z%
+
+    // direction vector
+    var zip/dx = var zip/x 0
+    var zip/dx -= var zip/x0 0
+    var zip/dy = var zip/y 0
+    var zip/dy -= var zip/y0 0
+    var zip/dz = var zip/z 0
+    var zip/dz -= var zip/z0 0
+} else {
+    // player vector
+    globalvar zip/px = %player.location.x%
+    globalvar zip/px -= var zip/x0 0
+    var zip/py = %player.location.y%
+    var zip/py -= var zip/y0 0
+    var zip/pz = %player.location.z%
+    var zip/pz -= var zip/z0 0
+
+    // (p * d) (globalvar temp as dot)
+    globalvar temp = globalvar zip/px 0
+    globalvar temp *= var zip/dx 0
+
+    globalvar temp2 = var zip/py 0
+    globalvar temp2 *= var zip/dy 0
+    globalvar temp += globalvar temp2 0
+
+    globalvar temp2 = var zip/pz 0
+    globalvar temp2 *= var zip/dz 0
+    globalvar temp += globalvar temp2 0
+
+    // |d|^2 (teamvar temp1 temp as len2)
+    teamvar temp1 temp = var zip/dx 0
+    teamvar temp1 temp *= var zip/dx 0
+    teamvar multi temp = var zip/dy 0
+    teamvar multi temp *= var zip/dy 0
+    teamvar temp1 temp += %var.team/multi temp 0%
+    teamvar multi temp = var zip/dz 0
+    teamvar multi temp *= var zip/dz 0
+    teamvar temp1 temp += %var.team/multi temp 0%
+
+    // dot / |d|^2 (var zip/speed as progress)
+    var zip/speed = globalvar temp 0
+    var zip/speed *= 1000
+    var zip/speed /= %var.team/temp1 temp 0%
+}
+
 if (var zip/active == 1) {
 // acceleration
+    var zip/spd = var zip/speed 1000
     var zip/dist/o = var zip/dist 0
     var zip/slope /= var zip/dist/o 0
 
-// slack
-    globalvar temp2 = var zip/dist 0
-    globalvar temp2 *= var zip/slack 5
-    globalvar temp2 /= 100
-    var zip/y -= globalvar temp2 0
-    globalvar temp2 *= globalvar temp2 0
-    globalvar temp2 *= 5
-
-    var zip/phase = var zip/dist 0
-    var zip/phase /= 2  
-
 // fallback
-    var zip/active = 150
+    var zip/active = 200
     globalvar temp = var zip/dist 0
     globalvar temp -= 17
     globalvar temp /= 3
     globalvar temp *= 5
     globalvar temp2 *= 5
 
-    teamvar temp2 temp = var zip/slope 0
-    teamvar temp2 temp *= 10
-    teamvar temp2 temp /= var zip/mag 10
-    teamvar temp2 temp *= -20
+    teamvar temp1 temp = var zip/slope 0
+    teamvar temp1 temp *= 10
+    teamvar temp1 temp /= var zip/mag 10
+    teamvar temp1 temp *= -20
     
     var zip/active += globalvar temp 0
     var zip/active += globalvar temp2 0
-    var zip/active += %var.team/temp2 temp 0%
+    var zip/active += %var.team/temp1 temp 0%
 } else {
     var zip/slope /= var zip/dist/o 0
     var zip/dist/s = var zip/dist 0
@@ -191,26 +218,26 @@ if (var zip/active == 1) {
 if or (var zip/active == 0 0, teamvar temp0 temp > 20 0, teamvar temp0 temp < -20 0, var zip/stuck >= 8 0) {
     sound "Horse Saddle" 0.7 1 "invokers_location"
     var zip/dist = 0
-    var zip/phase = -1
 }
 
 // final
-if (var zip/dist <= 4 0, var zip/phase == -1 0) {
-    tp "custom_coordinates" "%var.player/zip/dest/x% ~ ~"
-    tp "custom_coordinates" "~ %var.player/zip/dest/y% ~"
-    tp "custom_coordinates" "~ ~ %var.player/zip/dest/z%"
+if (var zip/dist <= 3 0) {
+    tp "custom_coordinates" "%var.player/zip/x% ~ ~"
+    tp "custom_coordinates" "~ %var.player/zip/y% ~"
+    tp "custom_coordinates" "~ ~ %var.player/zip/z%"
     tp "custom_coordinates" "~0.5 ~ ~0.5"
     changeVelocity 0 0 0
 
 // footprint cleanup
-    var zip/phase Unset
+    var zip/dist Unset
     var zip/active Unset
+
     var zip/x Unset
     var zip/y Unset
     var zip/z Unset
-    globalvar zip/dx Unset
-    var zip/dy Unset
-    var zip/dz Unset
+    globalvar zip/px Unset
+    var zip/py Unset
+    var zip/pz Unset
     var xVelo Unset
     var yVelo Unset
     var zVelo Unset
@@ -262,6 +289,21 @@ if () {
     var zVelo += globalvar temp 0
     var zVelo /= 1000
 
+// slack
+    var zip/speed += 100
+    teamvar multi temp = 1000
+    teamvar multi temp -= var zip/speed 0
+    teamvar multi temp *= var zip/speed 0
+    teamvar multi temp /= 10000
+
+    teamvar multi temp *= var zip/slack 25
+    teamvar multi temp /= 100
+
+    var yVelo -= %var.team/multi temp 0%
+}
+
+if () {
+// velocity change
     changeVelocity "%var.player/xVelo 0%" "%var.player/yVelo 0%" "%var.player/zVelo 0%"
     pause 1
     changeVelocity "%var.player/xVelo 0%" "%var.player/yVelo 0%" "%var.player/zVelo 0%"
