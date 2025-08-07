@@ -9,24 +9,24 @@ Setup:
     var zip/active = 1
 
 Optional Setup:
-    var zip/slack = slack factor (default: 5) [factors of 5]
+    var zip/slack = slack factor (default: 5) [range: -inf to inf]
         -x  : works intuitively (goes upwards)
         1   : no slack
         5   : normal slack
         10  : heavy slack
-    var zip/mag = magnitude factor (default: 10) [factors of 5] 
+    var zip/mag = magnitude factor (10)
+        <-5 : may cause issues
         -x  : works intuitively (inverse slope acceleration)
         1   : base acceleration
         10  : x10 slope acceleration
         100 : x100 slope acceleration
-        ( values <-5 may cause issues )
-    var zip/decay = decay factor (default: 10) [-inf to inf]
+    var zip/decay = decay factor (10) [-inf to inf]
         -x  : works intuitively (reverses decay)
         1   : no decay
         10  : normal decay
         50  : extremely light decay
-        ( values >50 may cause issues )
-    var zip/speed = set initial speed (default: 1000) [0+]
+        >50 : may cause issues
+    var zip/speed = set initial speed (1000) [0+]
         -x  : does not support negative values
 */
 
@@ -207,7 +207,7 @@ if () {
 }
 
 // failsafes
-if or (var zip/active == 0 0, teamvar b temp < var zip/bo -3, var zip/stuck >= 8 0) {
+if or (var zip/active <= 0 0, teamvar b temp < var zip/bo -3, var zip/stuck >= 8 0) {
     sound "Horse Saddle" 0.7 1 "invokers_location"
     var zip/dist = 0
 }
