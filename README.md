@@ -14,7 +14,7 @@ Requires [HTSL](https://github.com/BusterBrown1218/HTSL)
 
 ### Optional Setup:
 **Slack Factor** var zip/slack (default: 5) [range: -inf to inf]
-- -x : Works intuitively (goes upwards)
+- -x : works intuitively (goes upwards)
 - 1 : extremely light slack
 - 5 : normal slack
 - 10 : heavy slack
