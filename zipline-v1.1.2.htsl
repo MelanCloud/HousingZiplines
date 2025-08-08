@@ -1,4 +1,4 @@
-// Zipline v1.1.1
+// Zipline v1.1.2
 // Novys (mncd)
 
 /*
@@ -14,7 +14,7 @@ Optional Setup:
         1   : no slack
         5   : normal slack
         10  : heavy slack
-    var zip/mag = magnitude factor (10)
+    var zip/mag = magnitude factor (10) [-inf to inf]
         <-5 : may cause issues
         -x  : works intuitively (inverse slope acceleration)
         1   : base acceleration
@@ -130,45 +130,8 @@ if (var zip/active == 1 0) {
     var zip/dy -= var zip/y0 0
     var zip/dz = var zip/z 0
     var zip/dz -= var zip/z0 0
-}
-if (var zip/active == 1) {
-// acceleration
     var zip/spd = var zip/speed 1000
-    var zip/dist/o = var zip/dist 0
-    var zip/slope /= var zip/dist/o 0
-
-// fallback
-    var zip/active = 200
-    globalvar a = var zip/dist 0
-    globalvar a -= 17
-    globalvar a /= 3
-    globalvar a *= 5
-    globalvar b *= 5
-
-    teamvar c temp = var zip/slope 0
-    teamvar c temp *= 10
-    teamvar c temp /= var zip/mag 10
-    teamvar c temp *= -20
-    
-    var zip/active += globalvar a 0
-    var zip/active += globalvar b 0
-    var zip/active += %var.team/c temp 0%
-
-    var zip/mag Unset
-} else {
-    var zip/slope /= var zip/dist/o 0
-    var zip/dist/s = var zip/dist 0
-
-// failsafes
-    var zip/dist/f = var zip/spd 0
-    var zip/dist/f /= 5000
-    var zip/dist/f += 1
-
-    var zip/bo = var zip/spd 0
-    var zip/bo /= -1000
-    var zip/bo -= 1
 }
-// vector projection cont.
 if () {
     // player vector
     globalvar zip/px = %player.location.x%
@@ -204,6 +167,43 @@ if () {
     var zip/speed = globalvar a 0
     var zip/speed *= 1000
     var zip/speed /= %var.team/c temp 0%
+}
+
+if (var zip/active == 1) {
+// acceleration
+    var zip/dist/o = var zip/dist 0
+    var zip/slope /= var zip/dist/o 0
+
+// fallback
+    var zip/active = 200
+    globalvar a = var zip/dist 0
+    globalvar a -= 17
+    globalvar a /= 3
+    globalvar a *= 5
+    globalvar b *= 5
+
+    teamvar c temp = var zip/slope 0
+    teamvar c temp *= 10
+    teamvar c temp /= var zip/mag 10
+    teamvar c temp *= -20
+    
+    var zip/active += globalvar a 0
+    var zip/active += globalvar b 0
+    var zip/active += %var.team/c temp 0%
+
+    var zip/mag Unset
+} else {
+    var zip/slope /= var zip/dist/o 0
+    var zip/dist/s = var zip/dist 0
+
+// failsafes
+    var zip/dist/f = var zip/spd 0
+    var zip/dist/f /= 5000
+    var zip/dist/f += 1
+
+    var zip/bo = var zip/spd 0
+    var zip/bo /= -1000
+    var zip/bo -= 1
 }
 
 // failsafes
